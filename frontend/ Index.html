@@ -1,1 +1,37 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EA SPORTS FC 27 - Web Simulation Engine</title>
+    <link rel="stylesheet" href="css/ea_style.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+
+    <div id="loading-screen">
+        <div class="logo-container">
+            <h1 class="fc-logo">FC<span>27</span></h1>
+            <p class="subtitle">CAMP NOU SIMULATION ENGINE</p>
+        </div>
+        <div class="loader-bar">
+            <div class="progress"></div>
+        </div>
+        <button id="start-match-btn" class="disabled" disabled>STADYUMA GİRİŞ YAP</button>
+    </div>
+
+    <div id="game-hud" class="hidden">
+        <div class="scoreboard">
+            <div class="team lime">CR7 TEAM</div>
+            <div class="score" id="match-score">0 - 0</div>
+            <div class="team cyan">NEYMAR XI</div>
+            <div class="match-time" id="game-clock">00:00</div>
+        </div>
+    </div>
+
+    <script src="js/engine/renderer.js"></script>
+</body>
+</html>
 
