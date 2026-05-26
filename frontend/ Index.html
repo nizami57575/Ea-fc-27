@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="az">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>EA SPORTS FC 27 - Web Game Engine</title>
+    <title>EA SPORTS FC 27</title>
     <link rel="stylesheet" href="css/ea_style.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <div id="main-menu">
+    <div id="main-menu" style="display: flex !important; opacity: 1 !important; visibility: visible !important;">
         <div class="menu-header">
             <h1 class="fc-logo">FC<span>27</span></h1>
             <p class="game-version">PREMIUM WEB ENGINE</p>
@@ -38,13 +38,13 @@
                 <div class="card-content">
                     <span class="card-tag">ÖZELLEŞTİR</span>
                     <h2>AYARLAR</h2>
-                    <p>Grafik çözünürlüğü ve dokunmatik kontrol ayarları.</p>
+                    <p>Grafik çözünürlüğü ve kontrolcü ayarları.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="game-hud" class="hidden">
+    <div id="game-hud" class="hidden" style="display: none;">
         <div class="scoreboard">
             <div class="team lime">CR7 TEAM</div>
             <div class="score" id="match-score">0 - 0</div>
@@ -57,14 +57,6 @@
     <script src="js/engine/animations.js"></script>
     <script src="js/engine/camera.js"></script>
     <script src="js/gameplay/skills.js"></script>
-    
     <script src="js/engine/renderer.js"></script>
 </body>
 </html>
-
-<body>
-  <div class="container-lg px-3 my-5 markdown-body">
-    <h1 id="ea-fc-27">Ea-fc-27</h1>
-    <!-- BURASI BOŞ -->
-  </div>
-</body>
