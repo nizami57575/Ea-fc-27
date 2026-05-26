@@ -2,40 +2,18 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EA SPORTS FC 27</title>
     <link rel="stylesheet" href="css/ea_style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body>
-    <div id="main-menu" style="display: flex !important;">
-        <div class="menu-header">
-            <h1 class="fc-logo">FC<span>27</span></h1>
-            <p class="game-version">PREMIUM WEB ENGINE</p>
-        </div>
-        <div class="menu-grid">
-            <div class="menu-card active" id="btn-kickoff">
-                <span class="card-tag">SÜRƏTLİ OYUN</span>
-                <h2>BAŞLAMA VURUŞU</h2>
-            </div>
-            <div class="menu-card" id="btn-career">
-                <span class="card-tag">MENECER</span>
-                <h2>KARİYER MODU</h2>
-            </div>
-        </div>
+    <div id="main-menu" style="display: flex !important; position: absolute; z-index: 100;">
+        <h1 style="color: white;">FC 27 ANA MENÜ</h1>
+        <button id="btn-kickoff" style="padding: 20px; font-size: 20px;">BAŞLAMA VURUŞU</button>
     </div>
-    <div id="game-hud" class="hidden" style="display: none;">
-        <div class="scoreboard">
-            <div class="team lime">CR7 TEAM</div>
-            <div class="score" id="match-score">0 - 0</div>
-            <div class="team cyan">NEYMAR XI</div>
-        </div>
-    </div>
-    <script src="js/gameplay/controls.js"></script>
-    <script src="js/engine/animations.js"></script>
-    <script src="js/engine/camera.js"></script>
-    <script src="js/gameplay/skills.js"></script>
+
     <script src="js/engine/renderer.js"></script>
 </body>
 </html>
