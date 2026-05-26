@@ -1,1 +1,167 @@
+/* Genel Sıfırlama ve Tam Ekran Ayarları */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #05050a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
+
+/* 3D Sahne Çizim Alanı */
+canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* EA FC Başlangıç Menü Katmanı */
+#main-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    background: linear-gradient(135deg, rgba(5, 5, 15, 0.85) 0%, rgba(15, 25, 40, 0.5) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8%;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease;
+}
+
+.menu-header {
+    margin-bottom: 20px;
+}
+
+.fc-logo {
+    font-size: 3.5rem;
+    color: #ffffff;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: 3px;
+}
+
+.fc-logo span {
+    color: #00ff66; /* EA Tematik Yeşil */
+}
+
+.game-version {
+    color: #8a99ad;
+    margin: 5px 0 0 0;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* Kartların Izgara Düzeni */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    width: 100%;
+    max-width: 1100px;
+}
+
+/* EA Tarzı Menü Seçenek Kartları */
+.menu-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 30px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+}
+
+/* Aktif veya Üzerine Gelinen Kartın Parlaması */
+.menu-card:hover, .menu-card.active {
+    background: rgba(0, 255, 102, 0.12);
+    border-color: #00ff66;
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 255, 102, 0.25);
+}
+
+.card-tag {
+    font-size: 0.7rem;
+    background: #00ff66;
+    color: #000000;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.menu-card h2 {
+    margin: 20px 0 10px 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.menu-card p {
+    font-size: 0.95rem;
+    color: #b3c2d4;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Maç Skor Paneli (HUD) */
+#game-hud {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 500;
+    transition: opacity 0.3s ease;
+}
+
+.scoreboard {
+    background: rgba(10, 15, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    padding: 8px 24px;
+    color: white;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.team {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+.team.lime { color: #00ff66; }
+.team.cyan { color: #00e5ff; }
+
+.score {
+    font-size: 1.4rem;
+    margin: 0 20px;
+    background: rgba(255,255,255,0.1);
+    padding: 2px 14px;
+    border-radius: 10px;
+}
+
+.match-time {
+    font-size: 0.9rem;
+    color: #f5a623;
+    margin-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.2);
+    padding-left: 10px;
+}
+
+/* Gizleme Sınıfı */
+.hidden {
+    display: none !important;
+}
 
