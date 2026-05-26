@@ -1,196 +1,128 @@
 // =================================================================
-// EA SPORTS FC 27 - SIFIRDAN BİRLEŞTİRİLMİŞ ENTEGRE MOTOR DOSYASI
+// EA SPORTS FC 27 - SIFIRDAN AYARLANMIŞ MENÜ VE MOTOR SİSTEMİ
 // =================================================================
 
-// 1. Üst Seviye Sahne ve Çizim Kurulumu
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0f1d); // Gece atmosferi arka planı
+scene.background = new THREE.Color(0x0a0f1d); 
 scene.fog = new THREE.FogExp2(0x0a0f1d, 0.008);
 
 const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-// CRITICAL: Beyazlığı Engelleyen ve Renkli Kaplamaları Aktif Eden Renk Ayarları
+// RENDER RENK AYARLARI (Beyazlığı Kökten Çözer)
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.4; // Renklerin canlı ve parlak çıkması için çarpan
-
+renderer.toneMappingExposure = 1.4; 
 document.body.appendChild(renderer.domElement);
 
-// 2. Gelişmiş Işık Sistemi (Stadyumu Canlandıran Güneş ve Projektörler)
-const ambientLight = new THREE.AmbientLight(0xffffff, 1.2); // Çevre yumuşak aydınlatması
+// IŞIKLANDIRMA MATRİSİ
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.6); 
 scene.add(ambientLight);
+const sunLight = new THREE.DirectionalLight(0xffffff, 2.0);
+sunLight.position.set(30, 100, 30);
+scene.add(sunLight);
 
-const mainStadiumLight = new THREE.DirectionalLight(0xffffff, 1.8);
-mainStadiumLight.position.set(40, 120, 40);
-mainStadiumLight.castShadow = true;
-mainStadiumLight.shadow.mapSize.width = 2048;
-mainStadiumLight.shadow.mapSize.height = 2048;
-scene.add(mainStadiumLight);
+// Oyun Durum Kontrolü
+let isGameStarted = false; 
 
-// Renklerin patlamasını sağlayan köşe projektörleri
-function IsikKulesiKur(x, y, z) {
-    const spot = new THREE.SpotLight(0xffffff, 2.5);
-    spot.position.set(x, y, z);
-    spot.angle = Math.PI / 3;
-    spot.penumbra = 0.5;
-    spot.castShadow = true;
-    scene.add(spot);
-}
-IsikKulesiKur(80, 60, 80);
-IsikKulesiKur(-80, 60, -80);
+let inputManager = null;
+try { if (typeof InputManager !== 'undefined') inputManager = new InputManager(); } catch(e) {}
 
-// 3. Sistem Yöneticileri Değişkenleri
-let inputManager = (typeof InputManager !== 'undefined') ? new InputManager() : null;
-let cameraSystem;
-let ronaldoAnimation, neymarAnimation;
-
-// 4. İNDİRDİĞİN 5 ADET ASSETİN SIFIRDAN SAHNEYE ÇAĞRILMASI
 const loader = new THREE.GLTFLoader();
-let ronaldoMesh, neymarMesh, topMesh;
+let ronaldoMesh, neymarMesh, topMesh, cameraSystem;
 
-// [Asset 1] Camp Nou Stadyumu Yükleniyor (Renk Sabitleme Döngüsüyle Birlikte)
+// ASSET 1: Camp Nou Stadyumu Yükleniyor
 loader.load('assets/camp_nou_stadium.glb', (gltf) => {
     const stadyum = gltf.scene;
-    
-    // Beyaz görünümü engellemek için tüm alt parçaların kaplamalarını sRGB kodlamasına çekiyoruz
     stadyum.traverse((child) => {
         if (child.isMesh) {
             child.material.depthWrite = true;
             if (child.material.map) child.material.map.encoding = THREE.sRGBEncoding;
         }
     });
-    
     stadyum.position.set(0, 0, 0);
-    stadyum.scale.set(1, 1, 1);
     scene.add(stadyum);
-    console.log("⚽ Camp Nou Renkli Olarak Yüklendi!");
-}, undefined, (err) => console.error("Stadyum yüklenirken dosya yolu hatası:", err));
+});
 
-// [Asset 2] Futbol Kalesi Ağları Yükleniyor
+// ASSET 2: Kaleler
 loader.load('assets/football_net.glb', (gltf) => {
-    const kaleKuzey = gltf.scene;
-    kaleKuzey.position.set(0, 0, -45); // Sahanın ilerisine yerleştir
-    kaleKuzey.scale.set(1, 1, 1);
-    scene.add(kaleKuzey);
-
-    // Aynı modeli klonlayarak sahanın diğer ucuna yerleştiriyoruz
-    const kaleGuney = kaleKuzey.clone();
-    kaleGuney.position.set(0, 0, 45);
-    kaleGuney.rotation.y = Math.PI;
-    scene.add(kaleGuney);
-    console.log("🥅 Kaleler Sahaya Çizildi!");
+    const kale1 = gltf.scene;
+    kale1.position.set(0, 0, -45);
+    scene.add(kale1);
+    const kale2 = kale1.clone();
+    kale2.position.set(0, 0, 45);
+    kale2.rotation.y = Math.PI;
+    scene.add(kale2);
 });
 
-// [Asset 3] Cristiano Ronaldo Modeli Yükleniyor
-loader.load('assets/cristiano_ronaldo_3d_model.glb', (gltf) => {
-    ronaldoMesh = gltf.scene;
-    ronaldoMesh.position.set(0, 0, 8); // Kendi yarı sahamızda
-    ronaldoMesh.castShadow = true;
-    scene.add(ronaldoMesh);
-    
-    if (typeof AnimationManager !== 'undefined') {
-        ronaldoAnimation = new AnimationManager(gltf);
-    }
-    console.log("🏃‍♂️ Cristiano Ronaldo Sahaya Çıktı!");
+// ASSET 3, 4, 5: Oyuncular ve Top
+loader.load('assets/cristiano_ronaldo_3d_model.glb', (gltf) => { ronaldoMesh = gltf.scene; ronaldoMesh.position.set(0, 0, 8); scene.add(ronaldoMesh); });
+loader.load('assets/neymar_3d_free_football_model_free__animation.glb', (gltf) => { neymarMesh = gltf.scene; neymarMesh.position.set(0, 0, -8); scene.add(neymarMesh); });
+loader.load('assets/football.glb', (gltf) => { 
+    topMesh = gltf.scene; 
+    topMesh.position.set(0, 0.2, 0); 
+    scene.add(topMesh); 
+    try { if (typeof DynamicCamera !== 'undefined') cameraSystem = new DynamicCamera(camera, topMesh, ronaldoMesh || topMesh); } catch(e) {}
 });
 
-// [Asset 4] Neymar Modeli Yükleniyor
-loader.load('assets/neymar_3d_free_football_model_free__animation.glb', (gltf) => {
-    neymarMesh = gltf.scene;
-    neymarMesh.position.set(0, 0, -8); // Rakip yarı sahada karşı karşıya
-    neymarMesh.castShadow = true;
-    scene.add(neymarMesh);
-    
-    if (typeof AnimationManager !== 'undefined') {
-        neymarAnimation = new AnimationManager(gltf);
-    }
-    console.log("🏃‍♂️ Neymar Jr. Sahaya Çıktı!");
-});
-
-// [Asset 5] Futbol Topu Yükleniyor
-loader.load('assets/football.glb', (gltf) => {
-    topMesh = gltf.scene;
-    topMesh.position.set(0, 0.2, 0); // Tam santra noktası
-    topMesh.castShadow = true;
-    scene.add(topMesh);
-
-    // Kütüphane mevcutsa dinamik TV yayın kamerasını topa odakla
-    if (typeof DynamicCamera !== 'undefined') {
-        cameraSystem = new DynamicCamera(camera, topMesh, ronaldoMesh || topMesh);
-    }
-    console.log("🔮 Futbol Topu Santraya Yerleştirildi!");
-});
-
-// Kamera ilk başta menünün arkasında stadyumu geniş açıdan izlesin
-camera.position.set(0, 25, 45);
+// İlk Kamera Açısı (Menü Arkası Sinematik Kamera)
+camera.position.set(0, 35, 65);
 camera.lookAt(0, 0, 0);
 
-// 5. ANA MENÜ BUTON TETİKLEME KODLARI
-document.getElementById('btn-kickoff').addEventListener('click', () => {
-    // Menüyü kapat ve oyun HUD ekranını göster
-    const menu = document.getElementById('main-menu');
-    menu.style.opacity = 0;
-    setTimeout(() => {
-        menu.classList.add('hidden');
-        document.getElementById('game-hud').classList.remove('hidden');
-    }, 500);
-    
-    console.log("Maç Başladı! İyi şanslar.");
-});
+// MENÜ BUTON KONTROLLERİ (ZORUNLU TETİKLEME)
+const kickoffBtn = document.getElementById('btn-kickoff');
+if (kickoffBtn) {
+    kickoffBtn.addEventListener('click', () => {
+        isGameStarted = true; // Oyunu başlat komutu veriliyor
+        
+        // Menüyü kapat, maçı aç
+        document.getElementById('main-menu').style.setProperty('display', 'none', 'important');
+        const gameHud = document.getElementById('game-hud');
+        gameHud.classList.remove('hidden');
+        gameHud.style.display = 'block';
+        
+        console.log("Maç Başladı!");
+    });
+}
 
-document.getElementById('btn-career').addEventListener('click', () => {
-    alert("Kariyer Modu Aktif Ediliyor! Menajer: Nizami Cəfərli. Takım: Qarabağ FK!");
-});
+const careerBtn = document.getElementById('btn-career');
+if (careerBtn) {
+    careerBtn.addEventListener('click', () => {
+        alert("Kariyer Modu Aktif! Teknik Direktör: Nizami Cəfərli | Takım: Qarabağ FK");
+    });
+}
 
-// 6. SÜREKLİ OYUN DÖNGÜSÜ (60 FPS RENDERING)
-const clock = new THREE.Clock();
-
+// 6. ANA OYUN DÖNGÜSÜ
 function animate() {
     requestAnimationFrame(animate);
-    const deltaTime = clock.getDelta();
-
-    // Kamera menü açıkken stadyumun etrafında sinematik olarak dönsün
-    const menuAcikMi = !document.getElementById('main-menu').classList.contains('hidden');
-    if (menuAcikMi) {
-        let zaman = Date.now() * 0.0003;
-        camera.position.x = Math.sin(zaman) * 45;
-        camera.position.z = Math.cos(zaman) * 45;
-        camera.position.y = 25;
+    
+    if (!isGameStarted) {
+        // OYUN BAŞLAMADIYSA: Kamera stadyum etrafında otomatik sinematik döner
+        let zaman = Date.now() * 0.0002;
+        camera.position.x = Math.sin(zaman) * 65;
+        camera.position.z = Math.cos(zaman) * 65;
+        camera.position.y = 35;
         camera.lookAt(0, 0, 0);
     } else {
-        // Maç başlayınca TV Kamerası topu takip moduna geçsin
+        // OYUN BAŞLADIYSA: Dinamik TV kamerası topu izlemeye başlar
         if (cameraSystem) cameraSystem.update();
-    }
-
-    // Kullanıcı Ronaldo'yu kontrol ediyorsa hareket ettir
-    if (!menuAcikMi && ronaldoMesh && inputManager) {
-        let move = inputManager.getMovement();
-        ronaldoMesh.position.x += move.x * 0.16;
-        ronaldoMesh.position.z += move.z * 0.16;
-
-        if (move.x !== 0 || move.z !== 0) {
-            ronaldoMesh.rotation.y = Math.atan2(move.x, move.z);
-            if (ronaldoAnimation) ronaldoAnimation.playAnimation('run');
-        } else {
-            if (ronaldoAnimation) ronaldoAnimation.playAnimation('idle');
+        
+        // Oyuncu Kontrolleri Devreye Girer
+        if (ronaldoMesh && inputManager) {
+            let move = inputManager.getMovement();
+            ronaldoMesh.position.x += move.x * 0.16;
+            ronaldoMesh.position.z += move.z * 0.16;
+            if (move.x !== 0 || move.z !== 0) {
+                ronaldoMesh.rotation.y = Math.atan2(move.x, move.z);
+            }
         }
     }
 
-    // Animasyon bileşenlerini güncelle
-    if (ronaldoAnimation) ronaldoAnimation.update(deltaTime);
-    if (neymarAnimation) neymarAnimation.update(deltaTime);
-
     renderer.render(scene, camera);
 }
-
-// Döngüyü Başlat
 animate();
 
-// Ekran Boyutu Değişirse Uyarla
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
